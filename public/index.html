@@ -46,6 +46,10 @@
                             <label for="name">Full name</label>
                             <input type="text" id="name" placeholder="Enter name" required>
                         </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="api-access" name="api-access">
+                            <label for="api-access">I want API access</label>
+                        </div>
                         <div class="disclaimer">
                             By signing up, you agree to our <a href="#">Privacy Policy</a> and <a href="#">Terms of
                                 Service</a>
@@ -96,9 +100,59 @@
                 </div>
             </div>
             <div class="feedback-wrapper" id="feedback-section">
-                <button class="submit-btn feedback-btn" onclick="alert('Feedback feature coming soon!')">Share
-                    Feedback</button>
+                <button class="submit-btn feedback-btn" onclick="openFeedbackModal()">Share Feedback</button>
             </div>
+        </section>
+
+        <!-- Feedback Modal -->
+        <div id="feedbackModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Share Feedback</h2>
+                    <span class="close-modal" onclick="closeFeedbackModal()">&times;</span>
+                </div>
+                <form onsubmit="handleFeedbackSubmit(event)">
+                    <textarea id="feedbackText" placeholder="Tell us what you think..." rows="4" required></textarea>
+                    <button type="submit" class="submit-btn modal-submit">Send Feedback</button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function openFeedbackModal() {
+                document.getElementById('feedbackModal').style.display = 'flex';
+                // Prevent background scrolling
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeFeedbackModal() {
+                document.getElementById('feedbackModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            function handleFeedbackSubmit(event) {
+                event.preventDefault();
+                const feedback = document.getElementById('feedbackText').value;
+
+                // Here you would typically send the feedback to your server
+                console.log('Feedback submitted:', feedback);
+
+                // Show success message (simple alert for now or replace content)
+                alert('Thank you for your feedback!');
+
+                // Reset and close
+                document.getElementById('feedbackText').value = '';
+                closeFeedbackModal();
+            }
+
+            // Close modal when clicking outside
+            window.onclick = function (event) {
+                const modal = document.getElementById('feedbackModal');
+                if (event.target == modal) {
+                    closeFeedbackModal();
+                }
+            }
+        </script>
         </section>
     </main>
 </body>
