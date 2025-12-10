@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-PT">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fontes - Early Access</title>
+    <title>Fontes - Acesso Antecipado</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,36 +25,40 @@
             <div class="content-wrapper">
                 <div class="info-section">
                     <div class="beta-tag">Fontes <span class="tag">BETA</span></div>
-                    <h1>Apply for <br>early access.</h1>
-                    <p>We're still fine tuning Fontes and would love your <a href="#feedback-section"
-                            class="text-link">feedback</a>.
+                    <h1>Acesso antecipado</h1>
+                    <p>Ainda estamos a trabalhar na app e adoraríamos receber o teu
+                        <a href="#feedback-section" class="text-link">feedback</a>.
                     </p>
-                    <p><a href="#join-form" class="text-link join-beta">Join our Beta</a> to help us shape the best
-                        platform for
-                        news.</p>
+                    <p><a href="#join-form" class="text-link join-beta">Inscreve-te</a>
+                        na versão beta
+                        para nos ajudar a moldar a
+                        melhor
+                        plataforma de
+                        notícias.</p>
                 </div>
                 <div class="visual-section">
                     <img src="images/app-showcase.png" alt="Fontes App Preview">
                 </div>
                 <div class="form-section" id="join-form">
-                    <form onsubmit="event.preventDefault(); alert('Thanks for joining!');">
+                    <form onsubmit="event.preventDefault(); alert('Obrigado por se juntar a nós!');">
                         <div class="input-group">
-                            <label for="email">Email address</label>
+                            <label for="email">Endereço de email</label>
                             <input type="email" id="email" placeholder="johnnycastle@gmail.com" required>
                         </div>
                         <div class="input-group">
-                            <label for="name">Full name</label>
-                            <input type="text" id="name" placeholder="Enter name" required>
+                            <label for="name">Nome completo</label>
+                            <input type="text" id="name" placeholder="Introduza o nome" required>
                         </div>
                         <div class="checkbox-group">
                             <input type="checkbox" id="api-access" name="api-access">
-                            <label for="api-access">I want API access</label>
+                            <label for="api-access">Quero acesso à API</label>
                         </div>
                         <div class="disclaimer">
-                            By signing up, you agree to our <a href="#">Privacy Policy</a> and <a href="#">Terms of
-                                Service</a>
+                            Ao inscreveres-te, concordas com a nossa <a href="#">Política de Privacidade</a> e <a
+                                href="#">Termos de
+                                Serviço</a>.
                         </div>
-                        <button type="submit" class="submit-btn">Join Beta</button>
+                        <button type="submit" class="submit-btn">Aderir ao Beta</button>
                     </form>
                 </div>
             </div>
@@ -62,8 +66,8 @@
 
         <section class="features-section">
             <div class="features-header">
-                <h2>Why Fontes?</h2>
-                <p>Designed for the modern reader.</p>
+                <h2>Porquê Fontes?</h2>
+                <p>Desenhado para um leitor moderno.</p>
             </div>
             <div class="features-list">
                 <div class="feature-item">
@@ -71,7 +75,7 @@
                         <span class="material-symbols-outlined">newspaper</span>
                     </div>
                     <div class="feature-text">
-                        <h3>All news from all sources in one place.</h3>
+                        <h3>Todas as notícias de todas as fontes num só lugar.</h3>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -79,7 +83,7 @@
                         <span class="material-symbols-outlined">notifications</span>
                     </div>
                     <div class="feature-text">
-                        <h3>Custom feeds and alerts.</h3>
+                        <h3>Feeds e alertas personalizados.</h3>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -87,7 +91,7 @@
                         <span class="material-symbols-outlined">tune</span>
                     </div>
                     <div class="feature-text">
-                        <h3>See and change your algorithm.</h3>
+                        <h3>Vê e altera o seu algoritmo.</h3>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -95,12 +99,12 @@
                         <span class="material-symbols-outlined">key</span>
                     </div>
                     <div class="feature-text">
-                        <h3>Analytics API key for developers.</h3>
+                        <h3>Analytics API Key para programadores.</h3>
                     </div>
                 </div>
             </div>
             <div class="feedback-wrapper" id="feedback-section">
-                <button class="submit-btn feedback-btn" onclick="openFeedbackModal()">Share Feedback</button>
+                <button class="submit-btn feedback-btn" onclick="openFeedbackModal()">Partilhar Feedback</button>
             </div>
         </section>
 
@@ -108,12 +112,12 @@
         <div id="feedbackModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2>Share Feedback</h2>
+                    <h2>Partilhar Feedback</h2>
                     <span class="close-modal" onclick="closeFeedbackModal()">&times;</span>
                 </div>
                 <form onsubmit="handleFeedbackSubmit(event)">
-                    <textarea id="feedbackText" placeholder="Tell us what you think..." rows="4" required></textarea>
-                    <button type="submit" class="submit-btn modal-submit">Send Feedback</button>
+                    <textarea id="feedbackText" placeholder="Diga-nos o que pensa..." rows="4" required></textarea>
+                    <button type="submit" class="submit-btn modal-submit">Enviar Feedback</button>
                 </form>
             </div>
         </div>
@@ -138,7 +142,7 @@
                 console.log('Feedback submitted:', feedback);
 
                 // Show success message (simple alert for now or replace content)
-                alert('Thank you for your feedback!');
+                alert('Obrigado pelo seu feedback!');
 
                 // Reset and close
                 document.getElementById('feedbackText').value = '';
