@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,37 +9,98 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
+
 <body>
     <header>
-        <div class="logo">Fontes</div>
-        <button class="close-btn">Close</button>
+        <div class="logo-wrapper">
+            <img src="images/fontes_byMarrco.png" alt="Fontes Logo" class="logo-img">
+            <span class="logo-text">Fontes</span>
+        </div>
     </header>
     <main>
-        <div class="content-wrapper">
-            <div class="info-section">
-                <div class="beta-tag">Fontes <span class="tag">BETA</span></div>
-                <h1>Apply for <br>early access.</h1>
-                <p>We're still fine tuning Fontes and would love your feedback.</p>
-                <p>Join our Beta to help us shape the best platform for news.</p>
+        <section class="hero-section">
+            <div class="content-wrapper">
+                <div class="info-section">
+                    <div class="beta-tag">Fontes <span class="tag">BETA</span></div>
+                    <h1>Apply for <br>early access.</h1>
+                    <p>We're still fine tuning Fontes and would love your <a href="#feedback-section"
+                            class="text-link">feedback</a>.
+                    </p>
+                    <p><a href="#join-form" class="text-link join-beta">Join our Beta</a> to help us shape the best
+                        platform for
+                        news.</p>
+                </div>
+                <div class="visual-section">
+                    <img src="images/app-showcase.png" alt="Fontes App Preview">
+                </div>
+                <div class="form-section" id="join-form">
+                    <form onsubmit="event.preventDefault(); alert('Thanks for joining!');">
+                        <div class="input-group">
+                            <label for="email">Email address</label>
+                            <input type="email" id="email" placeholder="johnnycastle@gmail.com" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="name">Full name</label>
+                            <input type="text" id="name" placeholder="Enter name" required>
+                        </div>
+                        <div class="disclaimer">
+                            By signing up, you agree to our <a href="#">Privacy Policy</a> and <a href="#">Terms of
+                                Service</a>
+                        </div>
+                        <button type="submit" class="submit-btn">Join Beta</button>
+                    </form>
+                </div>
             </div>
-            <div class="form-section">
-                <form onsubmit="event.preventDefault(); alert('Thanks for joining!');">
-                    <div class="input-group">
-                        <label for="email">Email address</label>
-                        <input type="email" id="email" placeholder="johnnycastle@gmail.com" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="name">Full name</label>
-                        <input type="text" id="name" placeholder="Enter name" required>
-                    </div>
-                    <div class="disclaimer">
-                        By signing up, you agree to our <a href="#">Privacy Policy</a> and <a href="#">Terms of Service</a>
-                    </div>
-                    <button type="submit" class="submit-btn">Join Beta</button>
-                </form>
+        </section>
+
+        <section class="features-section">
+            <div class="features-header">
+                <h2>Why Fontes?</h2>
+                <p>Designed for the modern reader.</p>
             </div>
-        </div>
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="icon-box">
+                        <span class="material-symbols-outlined">newspaper</span>
+                    </div>
+                    <div class="feature-text">
+                        <h3>All news from all sources in one place.</h3>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon-box">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </div>
+                    <div class="feature-text">
+                        <h3>Custom feeds and alerts.</h3>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon-box">
+                        <span class="material-symbols-outlined">tune</span>
+                    </div>
+                    <div class="feature-text">
+                        <h3>See and change your algorithm.</h3>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon-box">
+                        <span class="material-symbols-outlined">key</span>
+                    </div>
+                    <div class="feature-text">
+                        <h3>Analytics API key for developers.</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="feedback-wrapper" id="feedback-section">
+                <button class="submit-btn feedback-btn" onclick="alert('Feedback feature coming soon!')">Share
+                    Feedback</button>
+            </div>
+        </section>
     </main>
 </body>
+
 </html>
