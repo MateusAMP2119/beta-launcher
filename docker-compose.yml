@@ -4,7 +4,7 @@ services:
   beta-launcher:
     build: .
     ports:
-      - "3000:3000"
+      - "3100:3000"
     volumes:
       - ./submissions.json:/app/submissions.json
       - ./admin-config.json:/app/admin-config.json
