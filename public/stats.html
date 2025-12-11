@@ -200,24 +200,64 @@
         </div>
     </div>
 
-    <div class="table-container" style="margin-bottom: 2rem;">
-        <div class="table-header">
-            <h2>Recent Signups</h2>
-        </div>
-        <div id="leadsTable">
-            <div class="loading">Loading data...</div>
+    <div class="toggle-container">
+        <button class="toggle-btn active" onclick="switchTab('signups')">Recent Signups</button>
+        <button class="toggle-btn" onclick="switchTab('feedback')">Recent Feedback</button>
+    </div>
+
+    <div id="signups-view">
+        <div class="table-container">
+            <div id="leadsTable">
+                <div class="loading">Loading data...</div>
+            </div>
         </div>
     </div>
 
-    <div class="table-container">
-        <div class="table-header">
-            <h2>Recent Feedback</h2>
-        </div>
-        <div id="feedbackTable">
-            <div class="loading">Loading data...</div>
+    <div id="feedback-view" class="hidden">
+        <div class="table-container">
+            <div id="feedbackTable">
+                <div class="loading">Loading data...</div>
+            </div>
         </div>
     </div>
     </div>
+
+    <style>
+        .toggle-container {
+            display: flex;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 0.25rem;
+            border-radius: 8px;
+            width: fit-content;
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        .toggle-btn:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 
     <script>
         async function fetchStats() {
@@ -263,6 +303,7 @@
                         <thead>
                             <tr>
                                 <th>Email</th>
+                                <th>Visitor ID</th>
                                 <th>API Access</th>
                                 <th>Date</th>
                                 <th>Actions</th>
@@ -281,6 +322,7 @@
                         html += `
                         <tr>
                             <td>${lead.email || 'N/A'}</td>
+                            <td>${lead.visitorId || 'N/A'}</td>
                             <td>${apiTag}</td>
                             <td>${date}</td>
                             <td>
@@ -307,6 +349,7 @@
                             <thead>
                                 <tr>
                                     <th>Message</th>
+                                    <th>Visitor ID</th>
                                     <th>Date</th>
                                     <th>Actions</th>
                                 </tr>
@@ -321,6 +364,7 @@
                         feedbackHtml += `
                             <tr>
                                 <td>${item.content || 'N/A'}</td>
+                                <td>${item.visitorId || 'N/A'}</td>
                                 <td>${date}</td>
                                 <td>
                                     <button class="delete-btn" onclick="deleteSubmission('${item.id}')">Delete</button>
@@ -336,6 +380,24 @@
             } catch (err) {
                 console.error(err);
                 tableEl.innerHTML = '<div class="loading" style="color: #ff6b6b">Failed to load data.</div>';
+            }
+        }
+
+        function switchTab(tab) {
+            const signupsView = document.getElementById('signups-view');
+            const feedbackView = document.getElementById('feedback-view');
+            const buttons = document.querySelectorAll('.toggle-btn');
+
+            if (tab === 'signups') {
+                signupsView.classList.remove('hidden');
+                feedbackView.classList.add('hidden');
+                buttons[0].classList.add('active');
+                buttons[1].classList.remove('active');
+            } else {
+                signupsView.classList.add('hidden');
+                feedbackView.classList.remove('hidden');
+                buttons[0].classList.remove('active');
+                buttons[1].classList.add('active');
             }
         }
 
