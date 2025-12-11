@@ -5,7 +5,4 @@ services:
     build: .
     ports:
       - "3100:3000"
-    volumes:
-      - ./submissions.json:/app/submissions.json
-      - ./admin-config.json:/app/admin-config.json
     restart: unless-stopped
