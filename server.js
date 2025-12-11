@@ -1,3 +1,4 @@
+require('dotenv').config();
 const crypto = require('crypto');
 const express = require('express');
 const path = require('path');
@@ -9,7 +10,7 @@ app.use(express.static('public'));
 app.use(express.json());
 
 const DATA_FILE = path.join(__dirname, 'submissions.json');
-const CONFIG_FILE = path.join(__dirname, 'admin-config.json');
+
 
 // Ensure unique IDs for all existing records on startup
 try {
@@ -38,12 +39,14 @@ try {
 // Basic Authentication Middleware
 const basicAuth = (req, res, next) => {
   try {
-    if (!fs.existsSync(CONFIG_FILE)) {
-      console.warn('Admin config not found, defaulting to open access (DEBUG ONLY) or denying.');
+    const expectedUser = process.env.ADMIN_USERNAME;
+    const expectedPass = process.env.ADMIN_PASSWORD;
+
+    if (!expectedUser || !expectedPass) {
+      console.warn('Admin credentials not set in environment variables.');
       return res.status(500).send('Server configuration error.');
     }
 
-    const config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -55,7 +58,7 @@ const basicAuth = (req, res, next) => {
     const user = auth[0];
     const pass = auth[1];
 
-    if (user === config.username && pass === config.password) {
+    if (user === expectedUser && pass === expectedPass) {
       next();
     } else {
       res.setHeader('WWW-Authenticate', 'Basic realm="Admin Access"');
@@ -96,7 +99,7 @@ const saveSubmission = (data) => {
 };
 
 app.post('/api/join', (req, res) => {
-  const { email, name, apiAccess, visitorId } = req.body;
+  const { email, apiAccess, visitorId } = req.body;
   if (!email) {
     return res.status(400).json({ error: 'Email is required' });
   }
@@ -203,7 +206,6 @@ app.get('/api/stats/data', basicAuth, (req, res) => {
 
       // Track Signups
       if (entry.type === 'join') {
-        const key = entry.email || entry.visitorId;
         // Upsert logic: keep latest or merge? Simple map by email overwrites info if same email joins again
         if (entry.email) {
           joins.set(entry.email, entry);

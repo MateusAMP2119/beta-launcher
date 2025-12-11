@@ -1,6 +1,8 @@
 # FOLDERS
 node_modules
+.idea
 
 # FILES
 package-lock.json
 submissions.json
+.env
