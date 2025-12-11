@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beta Launcher | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f0f11;
+            --card-bg: #1a1a1d;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --border: #27272a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .refresh-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        td {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tag-yes {
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+        }
+
+        .tag-no {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ff6b6b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Beta Launcher Analytics</h1>
+            <button class="refresh-btn" onclick="fetchStats()">Refresh Data</button>
+        </header>
+
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Visitors</div>
+            <div class="stat-value" id="totalVisitors">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Beta Signups</div>
+            <div class="stat-value" id="totalJoins">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Feedback</div>
+            <div class="stat-value" id="totalFeedback">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Conversion Rate</div>
+            <div class="stat-value" id="conversionRate">-%</div>
+        </div>
+    </div>
+
+    <div class="table-container" style="margin-bottom: 2rem;">
+        <div class="table-header">
+            <h2>Recent Signups</h2>
+        </div>
+        <div id="leadsTable">
+            <div class="loading">Loading data...</div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <h2>Recent Feedback</h2>
+        </div>
+        <div id="feedbackTable">
+            <div class="loading">Loading data...</div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        async function fetchStats() {
+            const visitorsEl = document.getElementById('totalVisitors');
+            const joinsEl = document.getElementById('totalJoins');
+            const feedbackEl = document.getElementById('totalFeedback');
+            const rateEl = document.getElementById('conversionRate');
+            const tableEl = document.getElementById('leadsTable');
+            const feedbackTableEl = document.getElementById('feedbackTable');
+
+            try {
+                // Fetch data. If 401, the browser will likely have prompted for the main page
+                // and should attach credentials here. If not, it fails.
+                const response = await fetch('/api/stats/data');
+
+                if (response.status === 401) {
+                    throw new Error('Authentication required');
+                }
+
+                const data = await response.json();
+
+                // Update Cards
+                visitorsEl.textContent = data.totalVisitors;
+                joinsEl.textContent = data.totalJoins;
+                feedbackEl.textContent = data.totalFeedback;
+
+                const rate = data.totalVisitors > 0
+                    ? ((data.totalJoins / data.totalVisitors) * 100).toFixed(1)
+                    : 0;
+                rateEl.textContent = `${rate}%`;
+
+                // Update Table
+                if (data.leads.length === 0) {
+                    tableEl.innerHTML = '<div class="loading">No signups yet.</div>';
+                } else {
+                    // Sort by timestamp descending (newest first)
+                    const sortedLeads = data.leads.sort((a, b) =>
+                        new Date(b.timestamp) - new Date(a.timestamp)
+                    );
+
+                    let html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>API Access</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                    sortedLeads.forEach(lead => {
+                        const date = new Date(lead.timestamp).toLocaleDateString() + ' ' +
+                            new Date(lead.timestamp).toLocaleTimeString();
+                        const apiTag = lead.apiAccess
+                            ? '<span class="tag tag-yes">YES</span>'
+                            : '<span class="tag tag-no">NO</span>';
+
+                        html += `
+                        <tr>
+                            <td>${lead.email || 'N/A'}</td>
+                            <td>${apiTag}</td>
+                            <td>${date}</td>
+                            <td>
+                                <button class="delete-btn" onclick="deleteSubmission('${lead.id}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                    });
+
+                    html += '</tbody></table>';
+                    tableEl.innerHTML = html;
+                }
+
+                // Update Feedback Table
+                if (!data.feedback || data.feedback.length === 0) {
+                    feedbackTableEl.innerHTML = '<div class="loading">No feedback yet.</div>';
+                } else {
+                    const sortedFeedback = data.feedback.sort((a, b) =>
+                        new Date(b.timestamp) - new Date(a.timestamp)
+                    );
+
+                    let feedbackHtml = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    sortedFeedback.forEach(item => {
+                        const date = new Date(item.timestamp).toLocaleDateString() + ' ' +
+                            new Date(item.timestamp).toLocaleTimeString();
+
+                        feedbackHtml += `
+                            <tr>
+                                <td>${item.content || 'N/A'}</td>
+                                <td>${date}</td>
+                                <td>
+                                    <button class="delete-btn" onclick="deleteSubmission('${item.id}')">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    feedbackHtml += '</tbody></table>';
+                    feedbackTableEl.innerHTML = feedbackHtml;
+                }
+
+            } catch (err) {
+                console.error(err);
+                tableEl.innerHTML = '<div class="loading" style="color: #ff6b6b">Failed to load data.</div>';
+            }
+        }
+
+        async function deleteSubmission(id) {
+            if (!confirm('Are you sure you want to delete this record?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/submissions/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    fetchStats(); // Refresh the data
+                } else {
+                    alert('Failed to delete submission');
+                }
+            } catch (err) {
+                console.error('Error deleting submission:', err);
+                alert('Error deleting submission');
+            }
+        }
+
+        // Initial load
+        fetchStats();
+    </script>
+    <style>
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ff6b6b;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+    </style>
+</body>
+
+</html>

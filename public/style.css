@@ -446,6 +446,15 @@ input:focus {
     font-size: 0.95rem;
 }
 
+.features-list {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 0 1rem;
+}
+
 @media (max-width: 900px) {
     .features-list {
         flex-direction: column;

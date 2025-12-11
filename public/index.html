@@ -45,10 +45,7 @@
                             <label for="email">Endereço de email</label>
                             <input type="email" id="email" name="email" placeholder="johnnycastle@gmail.com" required>
                         </div>
-                        <div class="input-group">
-                            <label for="name">Nome completo</label>
-                            <input type="text" id="name" name="name" placeholder="Introduza o nome" required>
-                        </div>
+
                         <div class="checkbox-group">
                             <input type="checkbox" id="api-access" name="apiAccess">
                             <label for="api-access">Quero acesso à API</label>
@@ -91,7 +88,7 @@
                         <span class="material-symbols-outlined">tune</span>
                     </div>
                     <div class="feature-text">
-                        <h3>Vê e altera o seu algoritmo.</h3>
+                        <h3>Vê e altera o teu algoritmo.</h3>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -149,7 +146,7 @@
                 event.preventDefault();
                 const form = event.target;
                 const email = form.email.value;
-                const name = form.name.value;
+
                 const apiAccess = form.apiAccess.checked;
                 const visitorId = getVisitorId();
 
@@ -159,7 +156,7 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ email, name, apiAccess, visitorId })
+                        body: JSON.stringify({ email, apiAccess, visitorId })
                     });
 
                     if (response.ok) {
