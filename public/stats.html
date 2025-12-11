@@ -6,48 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beta Launcher | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
     <style>
-        :root {
-            --bg-color: #0f0f11;
-            --card-bg: #1a1a1d;
-            --text-primary: #ffffff;
-            --text-secondary: #a1a1aa;
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.3);
-            --border: #27272a;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            min-height: 100vh;
-            padding: 2rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
         .refresh-btn {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -60,14 +20,7 @@
 
         .refresh-btn:hover {
             border-color: var(--text-secondary);
-            color: var(--text-primary);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            color: var(--text-color);
         }
 
         .stat-card {
@@ -93,7 +46,7 @@
         .stat-value {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--text-color);
         }
 
         .table-container {
@@ -133,7 +86,7 @@
         }
 
         td {
-            color: var(--text-primary);
+            color: var(--text-color);
             font-size: 0.95rem;
         }
 
@@ -173,53 +126,54 @@
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <h1>Beta Launcher Analytics</h1>
-            <button class="refresh-btn" onclick="fetchStats()">Refresh Data</button>
-        </header>
-
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-label">Total Visitors</div>
-            <div class="stat-value" id="totalVisitors">-</div>
+    <header>
+        <div class="logo-wrapper">
+            <img src="../images/fontes_byMarrco.png" alt="Fontes Logo" class="logo-img">
+            <span class="logo-text">Fontes</span>
         </div>
-        <div class="stat-card">
-            <div class="stat-label">Beta Signups</div>
-            <div class="stat-value" id="totalJoins">-</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Total Feedback</div>
-            <div class="stat-value" id="totalFeedback">-</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Conversion Rate</div>
-            <div class="stat-value" id="conversionRate">-%</div>
-        </div>
-    </div>
+        <button class="refresh-btn" onclick="fetchStats()">Refresh Data</button>
+    </header>
 
-    <div class="toggle-container">
-        <button class="toggle-btn active" onclick="switchTab('signups')">Recent Signups</button>
-        <button class="toggle-btn" onclick="switchTab('feedback')">Recent Feedback</button>
-    </div>
-
-    <div id="signups-view">
-        <div class="table-container">
-            <div id="leadsTable">
-                <div class="loading">Loading data...</div>
+    <div class="stats-container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Visitors</div>
+                <div class="stat-value" id="totalVisitors">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Beta Signups</div>
+                <div class="stat-value" id="totalJoins">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Feedback</div>
+                <div class="stat-value" id="totalFeedback">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Conversion Rate</div>
+                <div class="stat-value" id="conversionRate">-%</div>
             </div>
         </div>
-    </div>
 
-    <div id="feedback-view" class="hidden">
-        <div class="table-container">
-            <div id="feedbackTable">
-                <div class="loading">Loading data...</div>
+        <div class="toggle-container">
+            <button class="toggle-btn active" onclick="switchTab('signups')">Recent Signups</button>
+            <button class="toggle-btn" onclick="switchTab('feedback')">Recent Feedback</button>
+        </div>
+
+        <div id="signups-view">
+            <div class="table-container">
+                <div id="leadsTable">
+                    <div class="loading">Loading data...</div>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div id="feedback-view" class="hidden">
+            <div class="table-container">
+                <div id="feedbackTable">
+                    <div class="loading">Loading data...</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <style>
@@ -251,7 +205,7 @@
         }
 
         .toggle-btn:hover:not(.active) {
-            color: var(--text-primary);
+            color: var(--text-color);
         }
 
         .hidden {

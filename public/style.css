@@ -9,6 +9,10 @@ html {
     --input-bg: #1a1a1a;
     --accent-color: #ffffff;
     --border-color: #333333;
+    --card-bg: #1a1a1d;
+    --accent: #6366f1;
+    --accent-glow: rgba(99, 102, 241, 0.3);
+    --border: #27272a;
 }
 
 * {
@@ -729,4 +733,15 @@ textarea:focus {
 
 .modal-body strong {
     color: #ddd;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stats-container {
+    padding: 0 2rem;
 }
