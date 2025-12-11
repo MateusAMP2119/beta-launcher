@@ -195,13 +195,21 @@ app.get('/api/stats/data', basicAuth, (req, res) => {
     const fileContent = fs.readFileSync(DATA_FILE, 'utf8');
     const submissions = JSON.parse(fileContent);
 
-    const visitors = new Set();
+    const visitorMap = new Map();
     const joins = new Map();
 
     submissions.forEach(entry => {
-      // Track Unique Visitors
+      // Track Unique Visitors Details
       if (entry.visitorId) {
-        visitors.add(entry.visitorId);
+        // If it's a 'visit' type or we just want to capture known metadata from any interaction
+        if (entry.type === 'visit' || !visitorMap.has(entry.visitorId)) {
+          // data we want: id, visitorId, userAgent, timestamp
+          // We prefer the latest 'visit' entry for userAgent info
+          const existing = visitorMap.get(entry.visitorId);
+          if (!existing || new Date(entry.timestamp) > new Date(existing.timestamp)) {
+            visitorMap.set(entry.visitorId, entry);
+          }
+        }
       }
 
       // Track Signups
@@ -215,13 +223,15 @@ app.get('/api/stats/data', basicAuth, (req, res) => {
 
     const leads = Array.from(joins.values()).map(({ name, ...rest }) => rest);
     const feedbackList = submissions.filter(entry => entry.type === 'feedback');
+    const visitorsList = Array.from(visitorMap.values());
 
     res.json({
-      totalVisitors: visitors.size,
+      totalVisitors: visitorMap.size,
       totalJoins: leads.length,
       totalFeedback: feedbackList.length,
       leads,
-      feedback: feedbackList
+      feedback: feedbackList,
+      visitors: visitorsList
     });
 
   } catch (err) {

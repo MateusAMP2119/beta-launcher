@@ -404,6 +404,9 @@
                         <button class="tab-btn" onclick="switchTab('feedback')">
                             Feedback <span class="tab-count" id="countFeedback">0</span>
                         </button>
+                        <button class="tab-btn" onclick="switchTab('visitors')">
+                            Visitors <span class="tab-count" id="countVisitors">0</span>
+                        </button>
 
                         <div class="search-wrapper">
                             <span class="material-symbols-outlined search-icon">search</span>
@@ -449,6 +452,23 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Visitors Table -->
+                <div id="visitors-view" class="hidden">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User Agent / Browser</th>
+                                <th>Visitor ID</th>
+                                <th>Date Visited</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visitorsBody">
+                            <!-- Rows injected here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -457,7 +477,8 @@
         <script>
             let currentData = {
                 leads: [],
-                feedback: []
+                feedback: [],
+                visitors: []
             };
 
             async function fetchStats() {
@@ -489,6 +510,7 @@
                     // Update Tab Counts
                     document.getElementById('countSignups').textContent = data.leads.length;
                     document.getElementById('countFeedback').textContent = data.feedback.length;
+                    document.getElementById('countVisitors').textContent = data.visitors.length;
 
 
                     const rate = data.totalVisitors > 0
@@ -499,6 +521,7 @@
                     // Initial Render
                     renderLeadsTable(data.leads);
                     renderFeedbackTable(data.feedback);
+                    renderVisitorsTable(data.visitors);
 
                 } catch (err) {
                     console.error(err);
@@ -591,21 +614,75 @@
                 }).join('');
             }
 
+            function renderVisitorsTable(visitors) {
+                const tbody = document.getElementById('visitorsBody');
+
+                if (!visitors || visitors.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 3rem; color: var(--text-secondary);">No visitors found.</td></tr>';
+                    return;
+                }
+
+                const sorted = [...visitors].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                tbody.innerHTML = sorted.map(visitor => {
+                    const date = new Date(visitor.timestamp).toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+
+                    // Simple UA parser or just display it
+                    // truncating UA for display if too long
+                    const ua = visitor.userAgent ? visitor.userAgent : 'Unknown';
+                    const displayUa = ua.length > 60 ? ua.substring(0, 60) + '...' : ua;
+
+                    return `
+                    <tr>
+                        <td title="${ua}">
+                            <div style="color: white; font-size: 0.9rem;">${displayUa}</div>
+                        </td>
+                        <td>
+                            <span style="font-family: monospace; color: var(--text-secondary);">${visitor.visitorId || 'N/A'}</span>
+                        </td>
+                        <td>${date}</td>
+                        <td>
+                             <div class="row-actions">
+                                <button class="btn-delete-row" onclick="deleteSubmission('${visitor.id}')">
+                                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span>
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+            }
+
             function switchTab(tab) {
                 const signupsView = document.getElementById('signups-view');
                 const feedbackView = document.getElementById('feedback-view');
+                const visitorsView = document.getElementById('visitors-view');
                 const tabs = document.querySelectorAll('.tab-btn');
 
                 if (tab === 'signups') {
                     signupsView.classList.remove('hidden');
                     feedbackView.classList.add('hidden');
+                    visitorsView.classList.add('hidden');
                     tabs[0].classList.add('active');
                     tabs[1].classList.remove('active');
+                    tabs[2].classList.remove('active');
                 } else if (tab === 'feedback') {
                     signupsView.classList.add('hidden');
                     feedbackView.classList.remove('hidden');
+                    visitorsView.classList.add('hidden');
                     tabs[0].classList.remove('active');
                     tabs[1].classList.add('active');
+                    tabs[2].classList.remove('active');
+                } else if (tab === 'visitors') {
+                    signupsView.classList.add('hidden');
+                    feedbackView.classList.add('hidden');
+                    visitorsView.classList.remove('hidden');
+                    tabs[0].classList.remove('active');
+                    tabs[1].classList.remove('active');
+                    tabs[2].classList.add('active');
                 }
             }
 
@@ -625,6 +702,13 @@
                     (item.visitorId && item.visitorId.toLowerCase().includes(query))
                 );
                 renderFeedbackTable(filteredFeedback);
+
+                // Filter Visitors
+                const filteredVisitors = currentData.visitors.filter(v =>
+                    (v.userAgent && v.userAgent.toLowerCase().includes(query)) ||
+                    (v.visitorId && v.visitorId.toLowerCase().includes(query))
+                );
+                renderVisitorsTable(filteredVisitors);
             }
 
 
