@@ -6,88 +6,263 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beta Launcher | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="../style.css">
     <style>
-        .refresh-btn {
-            background: var(--card-bg);
+        :root {
+            --table-border: #333;
+            --table-header-bg: #1a1a1d;
+            --table-hover: rgba(255, 255, 255, 0.03);
+            --badge-success-bg: rgba(16, 185, 129, 0.15);
+            --badge-success-text: #34d399;
+            --badge-error-bg: rgba(239, 68, 68, 0.15);
+            --badge-error-text: #ff6b6b;
+            --btn-text: #a1a1aa;
+            --btn-hover-text: #fff;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* --- Layout & Utilities --- */
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        /* --- Toolbar (Tabs & Actions) --- */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 2rem;
+            border-bottom: 1px solid var(--border);
+            width: 100%;
+            align-items: flex-end;
+            padding: 1.5rem;
+            padding-top: 1rem;
+            padding-bottom: 0;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding-bottom: 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-color);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .tab-count {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 0.4rem;
+            color: var(--text-secondary);
+        }
+
+        .tab-btn.active .tab-count {
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        /* --- Actions Bar --- */
+        .actions-bar {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: transparent;
             border: 1px solid var(--border);
             color: var(--text-secondary);
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 6px;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .refresh-btn:hover {
+        .btn-action:hover {
             border-color: var(--text-secondary);
             color: var(--text-color);
+        }
+
+        .btn-action .material-symbols-outlined {
+            font-size: 1.1rem;
+        }
+
+        .search-wrapper {
+            position: relative;
+            min-width: 500px;
+            margin-left: auto;
+            margin-bottom: 1rem;
+            align-self: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+        }
+
+        /* --- Data Cards / Stats --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 1.5rem;
-            transition: transform 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent);
-            box-shadow: 0 4px 20px var(--accent-glow);
+            padding: 1.25rem;
         }
 
         .stat-label {
             color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: var(--text-color);
         }
 
-        .table-container {
+        /* --- Main Table --- */
+        .table-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
-        }
-
-        .table-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .table-header h2 {
-            font-size: 1.1rem;
-            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.9rem;
         }
 
-        th,
-        td {
-            text-align: left;
-            padding: 1rem 1.5rem;
+        thead {
+            background: rgba(255, 255, 255, 0.02);
             border-bottom: 1px solid var(--border);
         }
 
         th {
-            background: rgba(255, 255, 255, 0.02);
+            text-align: left;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
             color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
         }
 
         td {
-            color: var(--text-color);
-            font-size: 0.95rem;
+            padding: 1rem 1.5rem;
+            color: #ddd;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
         }
 
         tr:last-child td {
@@ -95,308 +270,456 @@
         }
 
         tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
+            background: var(--table-hover);
         }
 
-        .tag {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
+        /* --- Checkbox --- */
+        .custom-checkbox {
+            appearance: none;
+            background-color: transparent;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.1rem;
+            height: 1.1rem;
+            border: 1px solid var(--text-secondary);
             border-radius: 4px;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .custom-checkbox::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--accent);
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+
+        .custom-checkbox:checked {
+            border-color: var(--accent);
+        }
+
+        .custom-checkbox:checked::before {
+            transform: scale(1);
+        }
+
+        /* --- Badges --- */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
-            text-transform: uppercase;
+            line-height: 1;
         }
 
-        .tag-yes {
-            background: rgba(16, 185, 129, 0.1);
-            color: #34d399;
+        .badge-success {
+            background: var(--badge-success-bg);
+            color: var(--badge-success-text);
         }
 
-        .tag-no {
-            background: rgba(239, 68, 68, 0.1);
+        .badge-error {
+            background: var(--badge-error-bg);
+            color: var(--badge-error-text);
+        }
+
+        .badge-neutral {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+        }
+
+        /* --- Row Actions --- */
+        .row-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-btn.delete:hover {
             color: #ff6b6b;
+            background: rgba(239, 68, 68, 0.1);
         }
 
-        .loading {
+        .company-row {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .company-name {
+            font-weight: 600;
+            color: white;
+        }
+
+        .company-email {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading-state {
+            padding: 3rem;
             text-align: center;
-            padding: 2rem;
             color: var(--text-secondary);
         }
     </style>
 </head>
 
 <body>
-    <header>
-        <div class="logo-wrapper">
-            <img src="../images/fontes_byMarrco.png" alt="Fontes Logo" class="logo-img">
-            <span class="logo-text">Fontes</span>
-        </div>
-        <button class="refresh-btn" onclick="fetchStats()">Refresh Data</button>
-    </header>
 
-    <div class="stats-container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Total Visitors</div>
-                <div class="stat-value" id="totalVisitors">-</div>
+    <body>
+        <header>
+            <div class="logo-wrapper">
+                <img src="../images/fontes_byMarrco.png" alt="Fontes Logo" class="logo-img">
+                <span class="logo-text">Fontes</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Beta Signups</div>
-                <div class="stat-value" id="totalJoins">-</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Total Feedback</div>
-                <div class="stat-value" id="totalFeedback">-</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Conversion Rate</div>
-                <div class="stat-value" id="conversionRate">-%</div>
-            </div>
-        </div>
+            <button class="btn-action" onclick="fetchStats()">
+                <span class="material-symbols-outlined">refresh</span>
+                Refresh
+            </button>
+        </header>
 
-        <div class="toggle-container">
-            <button class="toggle-btn active" onclick="switchTab('signups')">Recent Signups</button>
-            <button class="toggle-btn" onclick="switchTab('feedback')">Recent Feedback</button>
-        </div>
-
-        <div id="signups-view">
-            <div class="table-container">
-                <div id="leadsTable">
-                    <div class="loading">Loading data...</div>
+        <div class="stats-container">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Visitors</div>
+                    <div class="stat-value" id="totalVisitors">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Beta Signups</div>
+                    <div class="stat-value" id="totalJoins">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Feedback</div>
+                    <div class="stat-value" id="totalFeedback">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Conversion Rate</div>
+                    <div class="stat-value" id="conversionRate">-%</div>
                 </div>
             </div>
-        </div>
 
-        <div id="feedback-view" class="hidden">
-            <div class="table-container">
-                <div id="feedbackTable">
-                    <div class="loading">Loading data...</div>
+            <!-- Main Content Area -->
+            <div class="table-card">
+                <div>
+                    <!-- Tabs -->
+                    <div class="tabs-container">
+                        <button class="tab-btn active" onclick="switchTab('signups')">
+                            All Signups <span class="tab-count" id="countSignups">0</span>
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('feedback')">
+                            Feedback <span class="tab-count" id="countFeedback">0</span>
+                        </button>
+
+                        <div class="search-wrapper">
+                            <span class="material-symbols-outlined search-icon">search</span>
+                            <input type="text" id="globalSearch" class="search-input"
+                                placeholder="Search by email, name or ID..." oninput="applyGlobalSearch()">
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <style>
-        .toggle-container {
-            display: flex;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 0.25rem;
-            border-radius: 8px;
-            width: fit-content;
-            margin-bottom: 1.5rem;
-        }
-
-        .toggle-btn {
-            padding: 0.5rem 1.5rem;
-            border-radius: 6px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .toggle-btn.active {
-            background: var(--accent);
-            color: #ffffff;
-        }
-
-        .toggle-btn:hover:not(.active) {
-            color: var(--text-color);
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
-
-    <script>
-        async function fetchStats() {
-            const visitorsEl = document.getElementById('totalVisitors');
-            const joinsEl = document.getElementById('totalJoins');
-            const feedbackEl = document.getElementById('totalFeedback');
-            const rateEl = document.getElementById('conversionRate');
-            const tableEl = document.getElementById('leadsTable');
-            const feedbackTableEl = document.getElementById('feedbackTable');
-
-            try {
-                // Fetch data. If 401, the browser will likely have prompted for the main page
-                // and should attach credentials here. If not, it fails.
-                const response = await fetch('/api/stats/data');
-
-                if (response.status === 401) {
-                    throw new Error('Authentication required');
-                }
-
-                const data = await response.json();
-
-                // Update Cards
-                visitorsEl.textContent = data.totalVisitors;
-                joinsEl.textContent = data.totalJoins;
-                feedbackEl.textContent = data.totalFeedback;
-
-                const rate = data.totalVisitors > 0
-                    ? ((data.totalJoins / data.totalVisitors) * 100).toFixed(1)
-                    : 0;
-                rateEl.textContent = `${rate}%`;
-
-                // Update Table
-                if (data.leads.length === 0) {
-                    tableEl.innerHTML = '<div class="loading">No signups yet.</div>';
-                } else {
-                    // Sort by timestamp descending (newest first)
-                    const sortedLeads = data.leads.sort((a, b) =>
-                        new Date(b.timestamp) - new Date(a.timestamp)
-                    );
-
-                    let html = `
+                <!-- Signups Table -->
+                <div id="signups-view">
                     <table>
                         <thead>
                             <tr>
-                                <th>Email</th>
+                                <th style="width: 50px;">
+                                    <input type="checkbox" class="custom-checkbox" onchange="toggleAll(this)">
+                                </th>
+                                <th class="sortable" onclick="sortBy('email')">User / Email</th>
+                                <th class="sortable" onclick="sortBy('visitorId')">Visitor ID</th>
+                                <th class="sortable" onclick="sortBy('date')">Date Joined</th>
+                                <th>Status (API)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadsBody">
+                            <!-- Rows injected here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Feedback Table -->
+                <div id="feedback-view" class="hidden">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">
+                                    <input type="checkbox" class="custom-checkbox">
+                                </th>
+                                <th>Feedback Message</th>
                                 <th>Visitor ID</th>
-                                <th>API Access</th>
                                 <th>Date</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="feedbackBody">
+                            <!-- Rows injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Removed old embedded styling that is now in the main style block -->
+
+        <script>
+            let currentData = {
+                leads: [],
+                feedback: []
+            };
+
+            async function fetchStats() {
+                const visitorsEl = document.getElementById('totalVisitors');
+                const joinsEl = document.getElementById('totalJoins');
+                const feedbackEl = document.getElementById('totalFeedback');
+                const rateEl = document.getElementById('conversionRate');
+                const leadsBody = document.getElementById('leadsBody');
+
+                // Show loading state
+                leadsBody.innerHTML = '<tr><td colspan="6"><div class="loading-state">Loading data...</div></td></tr>';
+
+                try {
+                    const response = await fetch('/api/stats/data');
+
+                    if (response.status === 401) {
+                        throw new Error('Authentication required');
+                        // Could redirect to login here
+                    }
+
+                    const data = await response.json();
+                    currentData = data;
+
+                    // Update Cards
+                    visitorsEl.textContent = data.totalVisitors;
+                    joinsEl.textContent = data.totalJoins;
+                    feedbackEl.textContent = data.totalFeedback;
+
+                    // Update Tab Counts
+                    document.getElementById('countSignups').textContent = data.leads.length;
+                    document.getElementById('countFeedback').textContent = data.feedback.length;
+
+
+                    const rate = data.totalVisitors > 0
+                        ? ((data.totalJoins / data.totalVisitors) * 100).toFixed(1)
+                        : 0;
+                    rateEl.textContent = `${rate}%`;
+
+                    // Initial Render
+                    renderLeadsTable(data.leads);
+                    renderFeedbackTable(data.feedback);
+
+                } catch (err) {
+                    console.error(err);
+                    leadsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #ff6b6b; padding: 2rem;">Failed to load data.</td></tr>';
+                }
+            }
+
+            function renderLeadsTable(leads) {
+                const tbody = document.getElementById('leadsBody');
+
+                if (leads.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 3rem; color: var(--text-secondary);">No signups found.</td></tr>';
+                    return;
+                }
+
+                // Sort by date desc default
+                const sorted = [...leads].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                tbody.innerHTML = sorted.map(lead => {
+                    const date = new Date(lead.timestamp).toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    });
+
+                    const apiBadge = lead.apiAccess
+                        ? '<span class="badge badge-success">API Access</span>'
+                        : '<span class="badge badge-neutral">No API</span>';
+
+                    return `
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="custom-checkbox">
+                        </td>
+                        <td>
+                            <div class="company-row">
+                                <span class="company-name">${lead.email || 'Unknown User'}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span style="font-family: monospace; color: var(--text-secondary);">${lead.visitorId || 'N/A'}</span>
+                        </td>
+                        <td>${date}</td>
+                        <td>${apiBadge}</td>
+                        <td>
+                            <div class="row-actions">
+                            <div class="row-actions">
+                                <button class="btn-delete-row" onclick="deleteSubmission('${lead.id}')">
+                                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span>
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
                 `;
+                }).join('');
+            }
 
-                    sortedLeads.forEach(lead => {
-                        const date = new Date(lead.timestamp).toLocaleDateString() + ' ' +
-                            new Date(lead.timestamp).toLocaleTimeString();
-                        const apiTag = lead.apiAccess
-                            ? '<span class="tag tag-yes">YES</span>'
-                            : '<span class="tag tag-no">NO</span>';
+            function renderFeedbackTable(feedback) {
+                const tbody = document.getElementById('feedbackBody');
 
-                        html += `
-                        <tr>
-                            <td>${lead.email || 'N/A'}</td>
-                            <td>${lead.visitorId || 'N/A'}</td>
-                            <td>${apiTag}</td>
-                            <td>${date}</td>
-                            <td>
-                                <button class="delete-btn" onclick="deleteSubmission('${lead.id}')">Delete</button>
-                            </td>
-                        </tr>
-                    `;
+                if (feedback.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 3rem; color: var(--text-secondary);">No feedback found.</td></tr>';
+                    return;
+                }
+
+                const sorted = [...feedback].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                tbody.innerHTML = sorted.map(item => {
+                    const date = new Date(item.timestamp).toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
                     });
 
-                    html += '</tbody></table>';
-                    tableEl.innerHTML = html;
+                    return `
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="custom-checkbox">
+                        </td>
+                        <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.content}">
+                            ${item.content || 'N/A'}
+                        </td>
+                        <td>
+                             <span style="font-family: monospace; color: var(--text-secondary);">${item.visitorId || 'N/A'}</span>
+                        </td>
+                        <td>${date}</td>
+                        <td>
+                            <div class="row-actions">
+                                <button class="btn-delete-row" onclick="deleteSubmission('${item.id}')">
+                                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span>
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+            }
+
+            function switchTab(tab) {
+                const signupsView = document.getElementById('signups-view');
+                const feedbackView = document.getElementById('feedback-view');
+                const tabs = document.querySelectorAll('.tab-btn');
+
+                if (tab === 'signups') {
+                    signupsView.classList.remove('hidden');
+                    feedbackView.classList.add('hidden');
+                    tabs[0].classList.add('active');
+                    tabs[1].classList.remove('active');
+                } else if (tab === 'feedback') {
+                    signupsView.classList.add('hidden');
+                    feedbackView.classList.remove('hidden');
+                    tabs[0].classList.remove('active');
+                    tabs[1].classList.add('active');
+                }
+            }
+
+            function applyGlobalSearch() {
+                const query = document.getElementById('globalSearch').value.toLowerCase();
+
+                // Filter Leads
+                const filteredLeads = currentData.leads.filter(lead =>
+                    (lead.email && lead.email.toLowerCase().includes(query)) ||
+                    (lead.visitorId && lead.visitorId.toLowerCase().includes(query))
+                );
+                renderLeadsTable(filteredLeads);
+
+                // Filter Feedback
+                const filteredFeedback = currentData.feedback.filter(item =>
+                    (item.content && item.content.toLowerCase().includes(query)) ||
+                    (item.visitorId && item.visitorId.toLowerCase().includes(query))
+                );
+                renderFeedbackTable(filteredFeedback);
+            }
+
+            function toggleAll(source) {
+                const checkboxes = document.querySelectorAll('.custom-checkbox');
+                for (let i = 0; i < checkboxes.length; i++) {
+                    checkboxes[i].checked = source.checked;
+                }
+            }
+
+            async function deleteSubmission(id) {
+                if (!confirm('Are you sure you want to delete this record?')) {
+                    return;
                 }
 
-                // Update Feedback Table
-                if (!data.feedback || data.feedback.length === 0) {
-                    feedbackTableEl.innerHTML = '<div class="loading">No feedback yet.</div>';
-                } else {
-                    const sortedFeedback = data.feedback.sort((a, b) =>
-                        new Date(b.timestamp) - new Date(a.timestamp)
-                    );
-
-                    let feedbackHtml = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Message</th>
-                                    <th>Visitor ID</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-
-                    sortedFeedback.forEach(item => {
-                        const date = new Date(item.timestamp).toLocaleDateString() + ' ' +
-                            new Date(item.timestamp).toLocaleTimeString();
-
-                        feedbackHtml += `
-                            <tr>
-                                <td>${item.content || 'N/A'}</td>
-                                <td>${item.visitorId || 'N/A'}</td>
-                                <td>${date}</td>
-                                <td>
-                                    <button class="delete-btn" onclick="deleteSubmission('${item.id}')">Delete</button>
-                                </td>
-                            </tr>
-                        `;
+                try {
+                    const response = await fetch(`/api/submissions/${id}`, {
+                        method: 'DELETE'
                     });
 
-                    feedbackHtml += '</tbody></table>';
-                    feedbackTableEl.innerHTML = feedbackHtml;
+                    if (response.ok) {
+                        fetchStats();
+                    } else {
+                        alert('Failed to delete submission');
+                    }
+                } catch (err) {
+                    console.error('Error deleting submission:', err);
+                    alert('Error deleting submission');
                 }
-
-            } catch (err) {
-                console.error(err);
-                tableEl.innerHTML = '<div class="loading" style="color: #ff6b6b">Failed to load data.</div>';
-            }
-        }
-
-        function switchTab(tab) {
-            const signupsView = document.getElementById('signups-view');
-            const feedbackView = document.getElementById('feedback-view');
-            const buttons = document.querySelectorAll('.toggle-btn');
-
-            if (tab === 'signups') {
-                signupsView.classList.remove('hidden');
-                feedbackView.classList.add('hidden');
-                buttons[0].classList.add('active');
-                buttons[1].classList.remove('active');
-            } else {
-                signupsView.classList.add('hidden');
-                feedbackView.classList.remove('hidden');
-                buttons[0].classList.remove('active');
-                buttons[1].classList.add('active');
-            }
-        }
-
-        async function deleteSubmission(id) {
-            if (!confirm('Are you sure you want to delete this record?')) {
-                return;
             }
 
-            try {
-                const response = await fetch(`/api/submissions/${id}`, {
-                    method: 'DELETE'
-                });
-
-                if (response.ok) {
-                    fetchStats(); // Refresh the data
-                } else {
-                    alert('Failed to delete submission');
-                }
-            } catch (err) {
-                console.error('Error deleting submission:', err);
-                alert('Error deleting submission');
+            // Initial load
+            fetchStats();
+        </script>
+        <style>
+            .btn-delete-row {
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                background: #f4f4f5;
+                border: 1px solid #e4e4e7;
+                color: #18181b;
+                padding: 0.35rem 0.75rem;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
             }
-        }
 
-        // Initial load
-        fetchStats();
-    </script>
-    <style>
-        .delete-btn {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ff6b6b;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .delete-btn:hover {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: rgba(239, 68, 68, 0.4);
-        }
-    </style>
-</body>
+            .btn-delete-row:hover {
+                background: #e4e4e7;
+                border-color: #d4d4d8;
+            }
+        </style>
+    </body>
 
 </html>
