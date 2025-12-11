@@ -40,17 +40,17 @@
                     <img src="images/app-showcase.png" alt="Fontes App Preview">
                 </div>
                 <div class="form-section" id="join-form">
-                    <form onsubmit="event.preventDefault(); alert('Obrigado por se juntar a nós!');">
+                    <form id="joinForm" onsubmit="handleJoinSubmit(event)">
                         <div class="input-group">
                             <label for="email">Endereço de email</label>
-                            <input type="email" id="email" placeholder="johnnycastle@gmail.com" required>
+                            <input type="email" id="email" name="email" placeholder="johnnycastle@gmail.com" required>
                         </div>
                         <div class="input-group">
                             <label for="name">Nome completo</label>
-                            <input type="text" id="name" placeholder="Introduza o nome" required>
+                            <input type="text" id="name" name="name" placeholder="Introduza o nome" required>
                         </div>
                         <div class="checkbox-group">
-                            <input type="checkbox" id="api-access" name="api-access">
+                            <input type="checkbox" id="api-access" name="apiAccess">
                             <label for="api-access">Quero acesso à API</label>
                         </div>
                         <div class="disclaimer">
@@ -116,7 +116,8 @@
                     <span class="close-modal" onclick="closeFeedbackModal()">&times;</span>
                 </div>
                 <form onsubmit="handleFeedbackSubmit(event)">
-                    <textarea id="feedbackText" placeholder="Diga-nos o que pensa..." rows="4" required></textarea>
+                    <textarea id="feedbackText" placeholder="Que features gostavas de ver?" rows="4"
+                        required></textarea>
                     <button type="submit" class="submit-btn modal-submit">Enviar Feedback</button>
                 </form>
             </div>
@@ -134,19 +135,71 @@
                 document.body.style.overflow = 'auto';
             }
 
-            function handleFeedbackSubmit(event) {
+            // Helper to get or create unique Visitor ID
+            function getVisitorId() {
+                let visitorId = localStorage.getItem('visitorId');
+                if (!visitorId) {
+                    visitorId = 'v_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+                    localStorage.setItem('visitorId', visitorId);
+                }
+                return visitorId;
+            }
+
+            async function handleJoinSubmit(event) {
                 event.preventDefault();
-                const feedback = document.getElementById('feedbackText').value;
+                const form = event.target;
+                const email = form.email.value;
+                const name = form.name.value;
+                const apiAccess = form.apiAccess.checked;
+                const visitorId = getVisitorId();
 
-                // Here you would typically send the feedback to your server
-                console.log('Feedback submitted:', feedback);
+                try {
+                    const response = await fetch('/api/join', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, name, apiAccess, visitorId })
+                    });
 
-                // Show success message (simple alert for now or replace content)
-                alert('Obrigado pelo seu feedback!');
+                    if (response.ok) {
+                        alert('Obrigado por te juntares a nós! Guardámos a tua inscrição.');
+                        form.reset();
+                    } else {
+                        alert('Ocorreu um erro ao submeter o formulário. Por favor tenta novamente.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Ocorreu um erro de conexão.');
+                }
+            }
 
-                // Reset and close
-                document.getElementById('feedbackText').value = '';
-                closeFeedbackModal();
+            async function handleFeedbackSubmit(event) {
+                event.preventDefault();
+                const feedbackText = document.getElementById('feedbackText');
+                const feedback = feedbackText.value;
+                const visitorId = getVisitorId();
+
+                try {
+                    const response = await fetch('/api/feedback', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ feedback, visitorId })
+                    });
+
+                    if (response.ok) {
+                        alert('Obrigado pelo teu feedback!');
+                        feedbackText.value = '';
+                        closeFeedbackModal();
+                    } else {
+                        alert('Ocorreu um erro ao enviar o feedback.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Ocorreu um erro de conexão.');
+                }
             }
 
             // Close modal when clicking outside
@@ -156,6 +209,16 @@
                     closeFeedbackModal();
                 }
             }
+
+            // Track visit
+            window.addEventListener('load', () => {
+                const visitorId = getVisitorId();
+                fetch('/api/visit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ visitorId })
+                }).catch(err => console.error('Failed to log visit:', err));
+            });
         </script>
         </section>
     </main>
