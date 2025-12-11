@@ -43,7 +43,7 @@
                     <form id="joinForm" onsubmit="handleJoinSubmit(event)">
                         <div class="input-group">
                             <label for="email">Endereço de email</label>
-                            <input type="email" id="email" name="email" placeholder="johnnycastle@gmail.com" required>
+                            <input type="email" id="email" name="email" placeholder="matthew@fontes.com" required>
                         </div>
 
                         <div class="checkbox-group">
@@ -51,9 +51,10 @@
                             <label for="api-access">Quero acesso à API</label>
                         </div>
                         <div class="disclaimer">
-                            Ao inscreveres-te, concordas com a nossa <a href="#">Política de Privacidade</a> e <a
-                                href="#">Termos de
-                                Serviço</a>.
+                            Ao inscreveres-te, concordas com a nossa <span class="text-link"
+                                onclick="openPrivacyModal()">Política de Privacidade</span> e <span class="text-link"
+                                onclick="openTermsModal()">Termos de
+                                Serviço</span>.
                         </div>
                         <button type="submit" class="submit-btn">Aderir ao Beta</button>
                     </form>
@@ -120,15 +121,148 @@
             </div>
         </div>
 
+        <!-- Success Modal -->
+        <div id="successModal" class="modal">
+            <div class="modal-content success-content">
+                <span class="close-modal success-close" onclick="closeSuccessModal()">&times;</span>
+                <div class="success-icon-wrapper">
+                    <span class="material-symbols-outlined success-icon">check_circle</span>
+                </div>
+                <p id="successMessage">A teu feedback foi guardado.</p>
+            </div>
+        </div>
+
+        <!-- Privacy Modal -->
+        <div id="privacyModal" class="modal">
+            <div class="modal-content modal-text-content">
+                <div class="modal-header">
+                    <h2>Política de Privacidade</h2>
+                    <span class="close-modal" onclick="closePrivacyModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Última atualização: 11 de Dezembro de 2025</p>
+                    <p>A tua privacidade é importante para nós. Esta Política de Privacidade explica como a Fontes
+                        ("nós", "nosso") recolhe, usa e protege as tuas informações quando utilizas a nossa aplicação e
+                        website.</p>
+                    <h2>1. O que recolhemos</h2>
+                    <p>Podemos recolher os seguintes tipos de informações:</p>
+                    <ul>
+                        <li><strong>Informações que nos dás:</strong> O teu endereço de email quando te inscreves na
+                            nossa lista de espera ou beta.</li>
+                        <li><strong>Informações de Utilização:</strong> Dados sobre como interages com o nosso site (ex:
+                            cliques, tempo na página) e identificadores anónimos (Visitor ID) para fins analíticos.</li>
+                    </ul>
+                    <h2>2. Como usamos a tua informação</h2>
+                    <p>Utilizamos a tua informação para:</p>
+                    <ul>
+                        <li>Fornecer, operar e manter os nossos serviços.</li>
+                        <li>Notificar-te sobre atualizações, novidades e o lançamento da app.</li>
+                        <li>Melhorar e personalizar a tua experiência.</li>
+                        <li>Analisar como o nosso serviço é utilizado (Analytics).</li>
+                    </ul>
+                    <h2>3. Partilha de Dados</h2>
+                    <p>Não vendemos os teus dados pessoais a terceiros. Podemos partilhar dados com fornecedores de
+                        serviços que nos ajudam a operar o nosso website (ex: alojamento), desde que estes concordem em
+                        manter esta informação confidencial.</p>
+                    <h2>4. Os teus direitos (GDPR)</h2>
+                    <p>Se és residente no Espaço Económico Europeu (EEE), tens certos direitos de proteção de dados,
+                        incluindo:</p>
+                    <ul>
+                        <li>O direito de aceder, atualizar ou apagar as informações que temos sobre ti.</li>
+                        <li>O direito de retificação.</li>
+                        <li>O direito de cancelar a subscrição a qualquer momento.</li>
+                    </ul>
+                    <p>Para exercer estes direitos, por favor contacta-nos.</p>
+                    <h2>5. Segurança</h2>
+                    <p>Valorizamos a tua confiança em fornecer-nos as tuas Informações Pessoais, e esforçamo-nos por
+                        usar meios comercialmente aceitáveis para as proteger. No entanto, lembra-te que nenhum método
+                        de transmissão pela internet é 100% seguro.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms Modal -->
+        <div id="termsModal" class="modal">
+            <div class="modal-content modal-text-content">
+                <div class="modal-header">
+                    <h2>Termos de Serviço</h2>
+                    <span class="close-modal" onclick="closeTermsModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Última atualização: 11 de Dezembro de 2025</p>
+                    <h2>1. Aceitação dos Termos</h2>
+                    <p>Ao aceder e utilizar o website e serviços da Fontes, aceitas cumprir e ficar vinculado aos
+                        seguintes termos e condições.</p>
+                    <h2>2. Descrição do Serviço</h2>
+                    <p>A Fontes é uma plataforma de agregação de notícias. Atualmente, estamos em fase Beta, o que
+                        significa que o serviço pode conter erros e funcionalidades podem mudar sem aviso prévio.</p>
+                    <h2>3. Uso do Serviço</h2>
+                    <p>Concordas em usar o serviço apenas para fins legais e de uma forma que não infrinja os direitos
+                        de, ou restrinja ou iniba o uso e usufruto do serviço por qualquer terceiro.</p>
+                    <h2>4. Propriedade Intelectual</h2>
+                    <p>O conteúdo, design e propriedade intelectual da plataforma Fontes pertencem-nos. Não podes
+                        copiar, reproduzir ou redistribuir qualquer parte do nosso serviço sem a nossa permissão
+                        expressa.</p>
+                    <h2>5. Isenção de Garantias</h2>
+                    <p>O serviço é fornecido "como está" e "conforme disponível", sem qualquer tipo de garantia,
+                        expressa ou implícita. Não garantimos que o serviço será ininterrupto, oportuno ou livre de
+                        erros.</p>
+                    <h2>6. Limitação de Responsabilidade</h2>
+                    <p>Em nenhum caso a Fontes será responsável por quaisquer danos diretos, indiretos, incidentais ou
+                        consequentes resultantes do uso ou incapacidade de usar o serviço.</p>
+                    <h2>7. Alterações aos Termos</h2>
+                    <p>Reservamo-nos o direito de modificar estes termos a qualquer momento. A continuação do uso do
+                        serviço após tais alterações constitui a tua aceitação dos novos termos.</p>
+                    <h2>8. Lei Aplicável</h2>
+                    <p>Estes termos são regidos e interpretados de acordo com as leis de Portugal e da União Europeia.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <script>
             function openFeedbackModal() {
                 document.getElementById('feedbackModal').style.display = 'flex';
-                // Prevent background scrolling
                 document.body.style.overflow = 'hidden';
             }
 
             function closeFeedbackModal() {
                 document.getElementById('feedbackModal').style.display = 'none';
+                if (document.getElementById('successModal').style.display !== 'flex') {
+                    document.body.style.overflow = 'auto';
+                }
+            }
+
+
+
+            function openSuccessModal(message) {
+                document.getElementById('successMessage').innerText = message;
+                document.getElementById('successModal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeSuccessModal() {
+                document.getElementById('successModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            function openPrivacyModal() {
+                document.getElementById('privacyModal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closePrivacyModal() {
+                document.getElementById('privacyModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            function openTermsModal() {
+                document.getElementById('termsModal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeTermsModal() {
+                document.getElementById('termsModal').style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
 
@@ -160,7 +294,7 @@
                     });
 
                     if (response.ok) {
-                        alert('Obrigado por te juntares a nós! Guardámos a tua inscrição.');
+                        openSuccessModal('Guardámos a tua inscrição!');
                         form.reset();
                     } else {
                         alert('Ocorreu um erro ao submeter o formulário. Por favor tenta novamente.');
@@ -187,9 +321,9 @@
                     });
 
                     if (response.ok) {
-                        alert('Obrigado pelo teu feedback!');
-                        feedbackText.value = '';
                         closeFeedbackModal();
+                        openSuccessModal('Obrigado pelo teu feedback!');
+                        feedbackText.value = '';
                     } else {
                         alert('Ocorreu um erro ao enviar o feedback.');
                     }
@@ -200,11 +334,17 @@
             }
 
             // Close modal when clicking outside
+            // Close modal when clicking outside
             window.onclick = function (event) {
-                const modal = document.getElementById('feedbackModal');
-                if (event.target == modal) {
-                    closeFeedbackModal();
-                }
+                const feedbackModal = document.getElementById('feedbackModal');
+                const successModal = document.getElementById('successModal');
+                const privacyModal = document.getElementById('privacyModal');
+                const termsModal = document.getElementById('termsModal');
+
+                if (event.target == feedbackModal) closeFeedbackModal();
+                if (event.target == successModal) closeSuccessModal();
+                if (event.target == privacyModal) closePrivacyModal();
+                if (event.target == termsModal) closeTermsModal();
             }
 
             // Track visit
