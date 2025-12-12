@@ -538,8 +538,8 @@ input:focus {
     border: 1px solid var(--border-color);
     border-radius: 12px;
     width: 90%;
-    max-width: 500px;
-    padding: 2rem;
+    max-width: 550px;
+    padding: 2.5rem;
     position: relative;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     animation: slideUp 0.3s;
@@ -577,6 +577,17 @@ input:focus {
     cursor: pointer;
     line-height: 1;
     transition: color 0.2s;
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+}
+
+.modal-description {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    margin-top: -0.5rem;
 }
 
 .close-modal:hover {
@@ -593,10 +604,18 @@ textarea {
     font-size: 1rem;
     font-family: inherit;
     resize: vertical;
-    min-height: 120px;
+    min-height: 250px;
     margin-bottom: 1.5rem;
     outline: none;
     transition: all 0.2s;
+}
+
+@media (max-width: 600px) {
+    textarea {
+        font-size: 16px;
+        /* Prevent auto-zoom on iOS */
+        padding: 0.8rem;
+    }
 }
 
 textarea:focus {
@@ -605,16 +624,36 @@ textarea:focus {
 }
 
 .modal-submit {
-    width: 100%;
-    margin-top: 0.5rem;
+    width: auto;
+    min-width: 150px;
+    margin-top: 1rem;
+    margin-left: auto;
     background: transparent;
     border: 1px solid var(--text-color);
     color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    /* Match feedback-btn (default is usually 8px in this project if not specified for feedback-btn, checking feedback-btn again) */
+    /* feedback-btn doesn't specify border-radius but inherits or uses default. submit-btn has 8px. */
+    cursor: pointer;
+    font-size: 0.9rem;
+    /* Match feedback-btn */
+}
+
+.modal-submit .btn-icon {
+    font-size: 1.1rem;
+    font-weight: bold;
 }
 
 .modal-submit:hover {
     background: rgba(255, 255, 255, 0.1);
     opacity: 1;
+    transform: translateY(-1px);
 }
 
 /* Success Modal Specifics */

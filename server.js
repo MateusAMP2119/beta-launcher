@@ -198,7 +198,15 @@ app.get('/api/stats/data', basicAuth, (req, res) => {
     const visitorMap = new Map();
     const joins = new Map();
 
+    const visitCounts = new Map();
+
     submissions.forEach(entry => {
+      // Count visits
+      if (entry.visitorId && entry.type === 'visit') {
+        const count = visitCounts.get(entry.visitorId) || 0;
+        visitCounts.set(entry.visitorId, count + 1);
+      }
+
       // Track Unique Visitors Details
       if (entry.visitorId) {
         // If it's a 'visit' type or we just want to capture known metadata from any interaction
@@ -223,11 +231,25 @@ app.get('/api/stats/data', basicAuth, (req, res) => {
 
     const leads = Array.from(joins.values()).map(({ name, ...rest }) => rest);
     const feedbackList = submissions.filter(entry => entry.type === 'feedback');
-    const visitorsList = Array.from(visitorMap.values());
+
+    // Merge counts into visitor list
+    const visitorsList = Array.from(visitorMap.values()).map(v => ({
+      ...v,
+      visitCount: visitCounts.get(v.visitorId) || 0
+    }));
+
+    // Calculate unique joins (visitors who have at least one 'join' entry)
+    const joinedVisitorIds = new Set();
+    submissions.forEach(entry => {
+      if (entry.type === 'join' && entry.visitorId) {
+        joinedVisitorIds.add(entry.visitorId);
+      }
+    });
 
     res.json({
       totalVisitors: visitorMap.size,
       totalJoins: leads.length,
+      uniqueJoins: joinedVisitorIds.size,
       totalFeedback: feedbackList.length,
       leads,
       feedback: feedbackList,

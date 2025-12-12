@@ -114,10 +114,14 @@
                     <h2>Partilhar Feedback</h2>
                     <span class="close-modal" onclick="closeFeedbackModal()">&times;</span>
                 </div>
+                <p class="modal-description">
+                    Que funcionalidades é que gostas de ver?
+                </p>
                 <form onsubmit="handleFeedbackSubmit(event)">
-                    <textarea id="feedbackText" placeholder="Que features gostavas de ver?" rows="4"
+                    <textarea id="feedbackText" placeholder="Escreve aqui o que achas indespensável" rows="4"
                         required></textarea>
-                    <button type="submit" class="submit-btn modal-submit">Enviar Feedback</button>
+                    <button type="submit" class="submit-btn modal-submit">Enviar Feedback <span
+                            class="material-symbols-outlined btn-icon">arrow_forward</span></button>
                 </form>
             </div>
         </div>
