@@ -153,6 +153,66 @@ app.post('/api/visit', (req, res) => {
   }
 });
 
+// Enroll User Endpoint
+app.post('/api/submissions/:id/enroll', basicAuth, (req, res) => {
+  const { id } = req.params;
+  try {
+    if (!fs.existsSync(DATA_FILE)) {
+      return res.status(404).json({ error: 'No data found' });
+    }
+
+    const fileContent = fs.readFileSync(DATA_FILE, 'utf8');
+    let submissions = JSON.parse(fileContent);
+
+    const submissionIndex = submissions.findIndex(sub => sub.id === id);
+
+    if (submissionIndex === -1) {
+      return res.status(404).json({ error: 'Submission not found' });
+    }
+
+    // Update the submission
+    submissions[submissionIndex].enrolled = true;
+    submissions[submissionIndex].enrolledAt = new Date().toISOString();
+
+    fs.writeFileSync(DATA_FILE, JSON.stringify(submissions, null, 2));
+    res.json({ success: true, message: 'User enrolled successfully' });
+
+  } catch (err) {
+    console.error('Error enrolling user:', err);
+    res.status(500).json({ error: 'Failed to enroll user' });
+  }
+});
+
+// Un-Enroll User Endpoint
+app.delete('/api/submissions/:id/enroll', basicAuth, (req, res) => {
+  const { id } = req.params;
+  try {
+    if (!fs.existsSync(DATA_FILE)) {
+      return res.status(404).json({ error: 'No data found' });
+    }
+
+    const fileContent = fs.readFileSync(DATA_FILE, 'utf8');
+    let submissions = JSON.parse(fileContent);
+
+    const submissionIndex = submissions.findIndex(sub => sub.id === id);
+
+    if (submissionIndex === -1) {
+      return res.status(404).json({ error: 'Submission not found' });
+    }
+
+    // Update the submission
+    delete submissions[submissionIndex].enrolled;
+    delete submissions[submissionIndex].enrolledAt;
+
+    fs.writeFileSync(DATA_FILE, JSON.stringify(submissions, null, 2));
+    res.json({ success: true, message: 'User unenrolled successfully' });
+
+  } catch (err) {
+    console.error('Error unenrolling user:', err);
+    res.status(500).json({ error: 'Failed to unenroll user' });
+  }
+});
+
 // Delete Submission Endpoint
 app.delete('/api/submissions/:id', basicAuth, (req, res) => {
   const { id } = req.params;

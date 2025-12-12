@@ -477,6 +477,7 @@
                     <div class="stat-label">Conversion Rate</div>
                     <div class="stat-value" id="conversionRate">-%</div>
                 </div>
+                <!-- New Enrolled Card (optional, or just rely on tab count) -->
             </div>
 
             <!-- Main Content Area -->
@@ -492,6 +493,9 @@
                         </button>
                         <button class="tab-btn" onclick="switchTab('visitors')">
                             Visitors <span class="tab-count" id="countVisitors">0</span>
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('enrollments')">
+                            Enrollments <span class="tab-count" id="countEnrollments">0</span>
                         </button>
 
                         <div class="search-wrapper">
@@ -556,6 +560,23 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Enrollments Table -->
+                <div id="enrollments-view" class="hidden">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User / Email</th>
+                                <th>Visitor ID</th>
+                                <th>Enrolled Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="enrollmentsBody">
+                            <!-- Rows injected here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -565,7 +586,8 @@
             let currentData = {
                 leads: [],
                 feedback: [],
-                visitors: []
+                visitors: [],
+                enrollments: []
             };
 
             async function fetchStats() {
@@ -599,6 +621,11 @@
                     document.getElementById('countFeedback').textContent = data.feedback.length;
                     document.getElementById('countVisitors').textContent = data.visitors.length;
 
+                    // Filter enrollments from leads
+                    const enrolledUsers = data.leads.filter(user => user.enrolled);
+                    currentData.enrollments = enrolledUsers;
+                    document.getElementById('countEnrollments').textContent = enrolledUsers.length;
+
 
                     const rate = data.totalVisitors > 0
                         ? ((data.uniqueJoins / data.totalVisitors) * 100).toFixed(1)
@@ -609,6 +636,7 @@
                     renderLeadsTable(data.leads);
                     renderFeedbackTable(data.feedback);
                     renderVisitorsTable(data.visitors);
+                    renderEnrollmentsTable(enrolledUsers);
 
                 } catch (err) {
                     console.error(err);
@@ -651,7 +679,12 @@
                         <td>${apiBadge}</td>
                         <td>
                             <div class="row-actions">
-                            <div class="row-actions">
+                                ${!lead.enrolled ? `
+                                <button class="btn-enroll-row" onclick="enrollUser('${lead.id}')">
+                                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">check_circle</span>
+                                    Enroll
+                                </button>
+                                ` : '<span class="badge badge-success">Enrolled</span>'}
                                 <button class="btn-delete-row" onclick="deleteSubmission('${lead.id}')">
                                     <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span>
                                     Delete
@@ -764,59 +797,153 @@
                 }).join('');
             }
 
+            function renderEnrollmentsTable(enrollments) {
+                const tbody = document.getElementById('enrollmentsBody');
+
+                if (!enrollments || enrollments.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 3rem; color: var(--text-secondary);">No active enrollments.</td></tr>';
+                    return;
+                }
+
+                // Sort by enrolledAt desc
+                const sorted = [...enrollments].sort((a, b) => new Date(b.enrolledAt || b.timestamp) - new Date(a.enrolledAt || a.timestamp));
+
+                tbody.innerHTML = sorted.map(user => {
+                    const date = new Date(user.enrolledAt || user.timestamp).toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    });
+
+                    return `
+                    <tr>
+                        <td>
+                            <div class="company-row">
+                                <span class="company-name">${user.email || 'Unknown User'}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span style="font-family: monospace; color: var(--text-secondary);">${user.visitorId || 'N/A'}</span>
+                        </td>
+                        <td>${date}</td>
+                        <td>
+                             <div class="row-actions">
+                                <button class="btn-delete-row" onclick="unenrollUser('${user.id}')" title="Remove from Enrollments">
+                                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">remove_circle</span>
+                                    Un-enroll
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+            }
+
             function switchTab(tab) {
                 const signupsView = document.getElementById('signups-view');
                 const feedbackView = document.getElementById('feedback-view');
                 const visitorsView = document.getElementById('visitors-view');
+                const enrollmentsView = document.getElementById('enrollments-view');
                 const tabs = document.querySelectorAll('.tab-btn');
+
+                // Reset all views to hidden
+                signupsView.classList.add('hidden');
+                feedbackView.classList.add('hidden');
+                visitorsView.classList.add('hidden');
+                enrollmentsView.classList.add('hidden');
+
+                // Reset all tabs active state
+                tabs.forEach(t => t.classList.remove('active'));
 
                 if (tab === 'signups') {
                     signupsView.classList.remove('hidden');
-                    feedbackView.classList.add('hidden');
-                    visitorsView.classList.add('hidden');
                     tabs[0].classList.add('active');
-                    tabs[1].classList.remove('active');
-                    tabs[2].classList.remove('active');
                 } else if (tab === 'feedback') {
-                    signupsView.classList.add('hidden');
                     feedbackView.classList.remove('hidden');
-                    visitorsView.classList.add('hidden');
-                    tabs[0].classList.remove('active');
                     tabs[1].classList.add('active');
-                    tabs[2].classList.remove('active');
                 } else if (tab === 'visitors') {
-                    signupsView.classList.add('hidden');
-                    feedbackView.classList.add('hidden');
                     visitorsView.classList.remove('hidden');
-                    tabs[0].classList.remove('active');
-                    tabs[1].classList.remove('active');
                     tabs[2].classList.add('active');
+                } else if (tab === 'enrollments') {
+                    enrollmentsView.classList.remove('hidden');
+                    tabs[3].classList.add('active');
                 }
             }
 
             function applyGlobalSearch() {
-                const query = document.getElementById('globalSearch').value.toLowerCase();
+                let query = document.getElementById('globalSearch').value.toLowerCase();
+
+                let mustBeEnrolled = false;
+                let mustBeUnenrolled = false;
+                let mustHaveApi = false;
+                let mustNotHaveApi = false;
+
+                if (query.includes('is:enrolled')) {
+                    mustBeEnrolled = true;
+                    query = query.replace('is:enrolled', '').trim();
+                } else if (query.includes('isnot:enrolled')) {
+                    mustBeUnenrolled = true;
+                    query = query.replace('isnot:enrolled', '').trim();
+                }
+
+                if (query.includes('has:api')) {
+                    mustHaveApi = true;
+                    query = query.replace('has:api', '').trim();
+                } else if (query.includes('hasnot:api')) {
+                    mustNotHaveApi = true;
+                    query = query.replace('hasnot:api', '').trim();
+                }
 
                 // Filter Leads
-                const filteredLeads = currentData.leads.filter(lead =>
-                    (lead.email && lead.email.toLowerCase().includes(query)) ||
-                    (lead.visitorId && lead.visitorId.toLowerCase().includes(query))
-                );
+                const filteredLeads = currentData.leads.filter(lead => {
+                    const matchesSearch = (lead.email && lead.email.toLowerCase().includes(query)) ||
+                        (lead.visitorId && lead.visitorId.toLowerCase().includes(query));
+
+                    if (mustBeEnrolled && !lead.enrolled) return false;
+                    if (mustBeUnenrolled && lead.enrolled) return false;
+                    if (mustHaveApi && !lead.apiAccess) return false;
+                    if (mustNotHaveApi && lead.apiAccess) return false;
+
+                    return matchesSearch;
+                });
                 renderLeadsTable(filteredLeads);
 
                 // Filter Feedback
-                const filteredFeedback = currentData.feedback.filter(item =>
-                    (item.content && item.content.toLowerCase().includes(query)) ||
-                    (item.visitorId && item.visitorId.toLowerCase().includes(query))
-                );
+                const filteredFeedback = currentData.feedback.filter(item => {
+                    const matchesSearch = (item.content && item.content.toLowerCase().includes(query)) ||
+                        (item.visitorId && item.visitorId.toLowerCase().includes(query));
+
+                    // Filters specific to Leads should hide other tables
+                    if (mustBeEnrolled || mustBeUnenrolled || mustHaveApi || mustNotHaveApi) return false;
+
+                    return matchesSearch;
+                });
                 renderFeedbackTable(filteredFeedback);
 
                 // Filter Visitors
-                const filteredVisitors = currentData.visitors.filter(v =>
-                    (v.userAgent && v.userAgent.toLowerCase().includes(query)) ||
-                    (v.visitorId && v.visitorId.toLowerCase().includes(query))
-                );
+                const filteredVisitors = currentData.visitors.filter(v => {
+                    const matchesSearch = (v.userAgent && v.userAgent.toLowerCase().includes(query)) ||
+                        (v.visitorId && v.visitorId.toLowerCase().includes(query));
+
+                    if (mustBeEnrolled || mustBeUnenrolled || mustHaveApi || mustNotHaveApi) return false;
+
+                    return matchesSearch;
+                });
                 renderVisitorsTable(filteredVisitors);
+
+                // Filter Enrollments
+                const filteredEnrollments = (currentData.enrollments || []).filter(user => {
+                    const matchesSearch = (user.email && user.email.toLowerCase().includes(query)) ||
+                        (user.visitorId && user.visitorId.toLowerCase().includes(query));
+
+                    // Enrollments are by definition enrolled, so is:enrolled is no-op, isnot:enrolled hides all
+                    if (mustBeEnrolled) { /* no-op */ }
+                    if (mustBeUnenrolled) return false;
+
+                    if (mustHaveApi && !user.apiAccess) return false;
+                    if (mustNotHaveApi && user.apiAccess) return false;
+
+                    return matchesSearch;
+                });
+                renderEnrollmentsTable(filteredEnrollments);
             }
 
 
@@ -825,6 +952,41 @@
                 document.getElementById('modalTitle').textContent = title;
                 document.getElementById('modalBody').textContent = content;
                 document.getElementById('infoModal').classList.add('open');
+            }
+
+
+            async function enrollUser(id) {
+                try {
+                    const response = await fetch(`/api/submissions/${id}/enroll`, {
+                        method: 'POST'
+                    });
+
+                    if (response.ok) {
+                        fetchStats(); // Refresh data
+                    } else {
+                        throw new Error('Failed to enroll user');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error enrolling user');
+                }
+            }
+
+            async function unenrollUser(id) {
+                try {
+                    const response = await fetch(`/api/submissions/${id}/enroll`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        fetchStats(); // Refresh data
+                    } else {
+                        throw new Error('Failed to unenroll user');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error unenrolling user');
+                }
             }
 
             async function deleteSubmission(id) {
@@ -884,6 +1046,27 @@
                 background: rgba(239, 68, 68, 0.15);
                 border-color: rgba(239, 68, 68, 0.3);
                 color: #ff6b6b;
+            }
+
+            .btn-enroll-row {
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid var(--border);
+                color: var(--text-secondary);
+                padding: 0.35rem 0.75rem;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .btn-enroll-row:hover {
+                background: var(--badge-success-bg);
+                border-color: rgba(52, 211, 153, 0.3);
+                color: var(--badge-success-text);
             }
         </style>
 
