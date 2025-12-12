@@ -6,5 +6,5 @@ services:
     env_file:
       - .env
     volumes:
-      - ./submissions.json:/app/submissions.json
+      - ./data:/app/data
     restart: unless-stopped

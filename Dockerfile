@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-RUN if [ ! -f submissions.json ]; then echo "[]" > submissions.json; fi
+RUN mkdir -p data && if [ ! -f data/submissions.json ]; then echo "[]" > data/submissions.json; fi
 
 EXPOSE 3000
 

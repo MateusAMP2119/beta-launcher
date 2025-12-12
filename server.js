@@ -9,7 +9,13 @@ const port = 3000;
 app.use(express.static('public'));
 app.use(express.json());
 
-const DATA_FILE = path.join(__dirname, 'submissions.json');
+const DATA_FILE = path.join(__dirname, 'data', 'submissions.json');
+
+// Ensure data directory exists
+const dataDir = path.dirname(DATA_FILE);
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
 
 
 // Ensure unique IDs for all existing records on startup
